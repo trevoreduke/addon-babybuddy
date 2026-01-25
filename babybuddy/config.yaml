@@ -1,6 +1,6 @@
 ---
 name: Baby Buddy (Voice Logger Edition)
-version: 2.7.1-voice2
+version: 2.7.1-voice3
 homeassistant: 2023.6.2
 slug: baby_buddy_voice
 description: Track sleep, feedings, diaper changes, tummy time and more! Includes voice logging.
@@ -26,6 +26,6 @@ schema:
   INGRESS_USER: str
   log_level: list(debug|info|warning|error|critical)
 ports:
-  8000/tcp: null
+  8000/tcp: 8009
 ports_description:
   8000/tcp: Web interface (Not required for Ingress)
