@@ -20,6 +20,8 @@ RUN \
 # hadolint ignore=DL3003
 RUN \
   echo "**** install build packages ****" && \
+  apk update && \
+  apk upgrade && \
   apk add --no-cache --virtual=build-dependencies \
   build-base \
   curl \
