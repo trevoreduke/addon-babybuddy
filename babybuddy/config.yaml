@@ -3,7 +3,6 @@ name: Baby Buddy (Voice Logger Edition)
 version: 2.7.1-voice1
 homeassistant: 2023.6.2
 slug: baby_buddy_voice
-image: "ghcr.io/trevoreduke/babybuddy-voice-{arch}"
 description: Track sleep, feedings, diaper changes, tummy time and more! Includes voice logging.
 url: https://github.com/trevoreduke/addon-babybuddy
 arch:
