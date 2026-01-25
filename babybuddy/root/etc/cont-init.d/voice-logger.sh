@@ -24,6 +24,6 @@ fi
 cp "$TEMPLATE_FILE" "$TEMPLATE_FILE.original"
 
 # Add voice logger script tags before </body>
-sed -i 's|</body>|    <!-- Voice Logger Widget -->\n    <script>\n      window.VOICE_LOGGER_CONFIG = {\n        webhookUrl: "https://n8n.trevorduke.com/webhook/baby-buddy-audio",\n        enabled: true\n      };\n    </script>\n    <script src="{% static '"'"'babybuddy/js/voice-logger-widget.js'"'"' %}"></script>\n  </body>|' "$TEMPLATE_FILE"
+sed -i 's|</body>|    <!-- Voice Logger Widget -->\n    <script>\n      window.VOICE_LOGGER_CONFIG = {\n        webhookUrl: "https://n8n.trevorduke.com/webhook/baby-buddy-audio",\n        enabled: true\n      };\n    </script>\n    <script src="/static/babybuddy/js/voice-logger-widget.js"></script>\n  </body>|' "$TEMPLATE_FILE"
 
 bashio::log.info "Voice Logger widget installed successfully!"
