@@ -22,6 +22,7 @@ RUN \
   echo "**** install build packages ****" && \
   apk update && \
   apk upgrade && \
+  apk add --no-cache --upgrade libcrypto3 libssl3 && \
   apk add --no-cache --virtual=build-dependencies \
   build-base \
   curl \
