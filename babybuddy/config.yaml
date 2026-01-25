@@ -1,6 +1,6 @@
 ---
 name: Baby Buddy (Voice Logger Edition)
-version: 2.7.1-voice1
+version: 2.7.1-voice2
 homeassistant: 2023.6.2
 slug: baby_buddy_voice
 description: Track sleep, feedings, diaper changes, tummy time and more! Includes voice logging.
