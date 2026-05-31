@@ -4,10 +4,6 @@ on:
   release:
     types: [published]
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/babybuddy
-
 jobs:
   aarch64:
     runs-on: ubuntu-latest

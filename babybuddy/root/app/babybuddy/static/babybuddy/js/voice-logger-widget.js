@@ -12,6 +12,8 @@
     const config = window.VOICE_LOGGER_CONFIG || {};
     const N8N_WEBHOOK_URL = config.webhookUrl || 'https://n8n.trevorduke.com/webhook/baby-buddy-audio';
     const ENABLED = config.enabled !== false; // Default to true
+    const MAX_RECORDING_MS = config.maxRecordingMs || 60000; // Auto-stop recording after 60s
+    const SUBMIT_TIMEOUT_MS = config.submitTimeoutMs || 30000; // Abort upload after 30s
 
     // Don't load if disabled
     if (!ENABLED) {
@@ -32,6 +34,7 @@
     let audioBlob;
     let recordingStartTime;
     let timerInterval;
+    let maxDurationTimeout;
 
     // Create widget HTML
     const widgetHTML = `
@@ -276,6 +279,15 @@
 
             timerInterval = setInterval(updateTimer, 100);
 
+            // Safety cap: auto-stop a runaway recording so we never upload an
+            // unbounded blob (e.g. tab left open while recording).
+            maxDurationTimeout = setTimeout(() => {
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    stopRecording();
+                    statusText.textContent = `Stopped at ${Math.round(MAX_RECORDING_MS / 1000)}s limit. Review and submit`;
+                }
+            }, MAX_RECORDING_MS);
+
         } catch (error) {
             console.error('Error accessing microphone:', error);
             alert('Could not access microphone. Please check permissions.');
@@ -287,6 +299,7 @@
         if (mediaRecorder && mediaRecorder.state === 'recording') {
             mediaRecorder.stop();
             clearInterval(timerInterval);
+            clearTimeout(maxDurationTimeout);
             recordBtn.classList.remove('recording');
             recordBtn.textContent = '🎤';
             statusText.textContent = 'Recording complete! Review and submit';
@@ -313,13 +326,17 @@
         submitBtn.disabled = true;
         response.style.display = 'none';
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), SUBMIT_TIMEOUT_MS);
+
         try {
             const formData = new FormData();
             formData.append('data', audioBlob, 'recording.webm');
 
             const res = await fetch(N8N_WEBHOOK_URL, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                signal: controller.signal
             });
 
             const data = await res.json();
@@ -354,11 +371,15 @@
             response.style.background = '#f8d7da';
             response.style.color = '#721c24';
             response.style.border = '1px solid #f5c6cb';
+            const message = error.name === 'AbortError'
+                ? `Upload timed out after ${Math.round(SUBMIT_TIMEOUT_MS / 1000)}s. Please check your connection and try again.`
+                : error.message;
             response.innerHTML = `
                 <h3 style="margin: 0 0 10px 0;">❌ Error</h3>
-                <p>${error.message}</p>
+                <p>${message}</p>
             `;
         } finally {
+            clearTimeout(timeoutId);
             submitBtn.disabled = false;
         }
     }
